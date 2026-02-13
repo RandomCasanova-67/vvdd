@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;700&display=swap');
+
+        /* 1. SOFT BACKGROUND */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fdfbfb 0%, #fad0c4 100%);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            touch-action: none;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0; left: 0; z-index: 1;
+        }
+
+        /* 2. THE CARD UI */
+        #ui-layer {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 30px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px rgba(255, 182, 193, 0.4);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.2rem;
+            color: #d63384;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        p {
+            color: #884a5e;
+            font-weight: 600;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        /* 3. TIMER STYLES */
+        #timer-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+            color: #ff4d6d;
+        }
+        
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.6);
+            padding: 8px 5px;
+            border-radius: 10px;
+            min-width: 55px;
+        }
+        
+        .time-val { font-size: 1.4rem; line-height: 1; }
+        .time-label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.7; margin-top: 4px;}
+
+        /* 4. BUTTONS */
+        .heart-btn {
+            background: none;
+            border: none;
+            font-size: 3.5rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 5px 5px rgba(255, 77, 109, 0.3));
+        }
+        .heart-btn:active { transform: scale(0.9); }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .yes-btn {
+            background: #ff4d6d;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+
+        .no-btn {
+            background: white;
+            color: #ff4d6d;
+            border: 2px solid #ff4d6d;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Floating Hint */
+        .tap-hint {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #ff8fa3;
+            font-size: 0.8rem;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="tap-hint">Tap anywhere for magic ✨</div>
+
+    <div id="ui-layer">
+        
+        <div id="step-0">
+            <h1 id="main-title">Hey Baby..!</h1>
+            <p>I made this chotusa thing just for you...🤫</p>
+            <button class="heart-btn" id="start-btn">❤️</button>
+            <p style="font-size: 0.8rem; opacity: 0.7;">(Tap to open my heart)</p>
+        </div>
+
+        <div id="step-1" class="hidden">
+            <h1>Our Story</h1>
+            <p>We've been writing our story for:</p>
+            
+            <div id="timer-container">
+                <div class="time-box"><span class="time-val" id="days">0</span><span class="time-label">Days</span></div>
+                <div class="time-box"><span class="time-val" id="hours">0</span><span class="time-label">Hrs</span></div>
+                <div class="time-box"><span class="time-val" id="mins">0</span><span class="time-label">Mins</span></div>
+                <div class="time-box"><span class="time-val" id="secs">0</span><span class="time-label">Secs</span></div>
+            </div>
+
+            <p style="font-size: 0.9rem;">And I've loved every second.</p>
+            <button class="action-btn yes-btn" id="next-btn" style="margin-top: 15px;">One Last Question...😭 ➡️</button>
+        </div>
+
+        <div id="step-2" class="hidden">
+            <h1 style="font-size: 2.5rem;">Be Mine?🌹</h1>
+            <p>Will you be my Valentine?🥺</p>
+            <div class="btn-group">
+                <button class="action-btn yes-btn" id="yes-btn">YES! 🥰</button>
+                <button class="action-btn no-btn" id="no-btn">NO!😤</button>
+            </div>
+        </div>
+
+        <div id="step-3-yes" class="hidden">
+            <h1>Yay! 🥰</h1>
+            <p>Happy Valentine's Day BABI! I love you so much.</p>
+            <div style="font-size: 3rem; margin-top: 20px;">💓🫂😘</div>
+        </div>
+
+        <div id="step-3-no" class="hidden">
+            <h1>Wrong Answer 😛</h1>
+            <p>Nice try😁, but you're stuck with me forever! 😜🫂♾️❤️</p>
+            <div style="font-size: 3rem; margin-top: 20px;">🔒</div>
+        </div>
+
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // --- 🔧 CUSTOMIZE HERE ---
+        const START_DATE = "2022-06-01"; // Format: YYYY-MM-DD
+        
+        // --- TIMER LOGIC ---
+        function updateTimer() {
+            const start = new Date(START_DATE).getTime();
+            const now = new Date().getTime();
+            const diff = now - start;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = days;
+                document.getElementById('hours').innerText = hours;
+                document.getElementById('mins').innerText = minutes;
+                document.getElementById('secs').innerText = seconds;
+            }
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer(); 
+
+        // --- NAVIGATION LOGIC ---
+        const step0 = document.getElementById('step-0');
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const step3Yes = document.getElementById('step-3-yes');
+        const step3No = document.getElementById('step-3-no');
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            step0.classList.add('hidden');
+            step1.classList.remove('hidden');
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            step1.classList.add('hidden');
+            step2.classList.remove('hidden');
+        });
+
+        document.getElementById('yes-btn').addEventListener('click', () => {
+            step2.classList.add('hidden');
+            step3Yes.classList.remove('hidden');
+            createBurst(window.innerWidth/2, window.innerHeight/2);
+        });
+
+        document.getElementById('no-btn').addEventListener('click', () => {
+            step2.classList.add('hidden');
+            step3No.classList.remove('hidden');
+        });
+
+        // --- CANVAS HEARTS ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, hearts = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Heart {
+            constructor(x, y, type = 'float') {
+                this.x = x || Math.random() * width;
+                this.y = y || height + Math.random() * 100;
+                this.size = Math.random() * 15 + 5;
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.color = `rgba(255, ${100 + Math.random() * 100}, ${100 + Math.random() * 100}, ${Math.random() * 0.5 + 0.2})`;
+                this.type = type; 
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                this.y -= this.speedY;
+                if (this.y < -20 && this.type === 'float') this.y = height + 20;
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 50; i++) hearts.push(new Heart());
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            hearts.forEach(h => { h.update(); h.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        function createBurst(x, y) {
+            for(let i=0; i<15; i++) hearts.push(new Heart(x, y, 'burst'));
+        }
+        window.addEventListener('click', (e) => createBurst(e.clientX, e.clientY));
+        window.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            createBurst(touch.clientX, touch.clientY);
+        });
+
+        init();
+        animate();
+    </script>
+</body>
+</html>
